@@ -46,30 +46,107 @@ public class Game
      */
     private void createRooms()
     {
-        Room outside, theater, pub, lab, office;
+        Room foyer, mainHall, diningRoom, kitchen, livingRoom, guestRoom, laundry, basementTop, basementBottom, cellar, emptyRoom, mainBottom, mainTop, library, lounge, patio, garden, landing, masterBedroom, study, bathroom, kidBedroom;
       
         // create the rooms
-        outside = new Room("outside the main entrance of the university");
-        theater = new Room("in a lecture theater");
-        pub = new Room("in the campus pub");
-        lab = new Room("in a computing lab");
-        office = new Room("in the computing admin office");
+        foyer = new Room("in the foyer of the Spooky Mansion.");
+        mainHall = new Room("in the main hall. You can tell these people were rich.");
+        diningRoom = new Room("in the dining room. The table is set...");
+        kitchen = new Room("in the kitchen. It smells like something is rotting.");
+        livingRoom = new Room("in the living room. Why is the TV on?");
+        guestRoom = new Room("in the guest room.");
+        laundry = new Room("in the laundry room.");
+        basementTop = new Room("at the top of a creepy staircase.\nDo you dare to go down?");
+        basementBottom = new Room("in a dark, dusty basement.");
+        cellar = new Room("in the cellar. Sadly, no vintage aged wines for you.");
+        emptyRoom = new Room("in an empty, uncomfortably echoey, room.");
+        mainBottom = new Room("at the bottom of a huge staircase.");
+        mainTop = new Room("at the top of the huge staircase.");
+        library = new Room("in the library. Did that rocking chair just move?");
+        lounge = new Room("in the lounge. The chairs in here look comfy, but you resist the urge to sit.");
+        patio = new Room("outside in an enclosed patio. It's actually kind of nice.");
+        garden = new Room("outside in a small, enclosed garden. A garden of dead, black plants.");
+        landing = new Room("in the upstairs landing. Did you just hear someone crying?");
+        masterBedroom = new Room("in the master bedroom.");
+        study = new Room("in the upstairs study.");
+        bathroom = new Room("in the bathroom. The toilet water is black. Yuck.");
+        kidBedroom = new Room("in a child's bedroom. Why is that doll looking at you?");
         
-        // initialise room exits
-        outside.setExit("east", theater);
-        outside.setExit("south", lab);
-        outside.setExit("west", pub);
 
-        theater.setExit("west", outside);
+        
+        // initialize room exits
+        foyer.setExit("north", mainHall);
 
-        pub.setExit("east", outside);
+        mainHall.setExit("north", mainBottom);
+        mainHall.setExit("south", foyer);
+        mainHall.setExit("west", library);
+        mainHall.setExit("east", diningRoom);
+        
+        library.setExit("west", lounge);
+        library.setExit("east", mainHall);
 
-        lab.setExit("north", outside);
-        lab.setExit("east", office);
+        lounge.setExit("north", garden);
+        lounge.setExit("south", patio);
+        lounge.setExit("east", library);
 
-        office.setExit("west", lab);
+        garden.setExit("south", lounge);
 
-        currentRoom = outside;  // start game outside
+        patio.setExit("north", lounge);
+
+        mainBottom.setExit("south", mainHall);
+        mainBottom.setExit("east", kitchen);
+        mainBottom.setExit("up", mainTop);
+
+        diningRoom.setExit("north", kitchen);
+        diningRoom.setExit("west", mainHall);
+        
+        kitchen.setExit("north", laundry);
+        kitchen.setExit("south", diningRoom);
+        kitchen.setExit("west", mainBottom);
+        kitchen.setExit("east", livingRoom);
+
+        laundry.setExit("south", kitchen);
+        laundry.setExit("east", guestRoom);
+
+        livingRoom.setExit("north", guestRoom);
+        livingRoom.setExit("west", kitchen);
+
+        guestRoom.setExit("south", livingRoom);
+        guestRoom.setExit("west", laundry);
+        guestRoom.setExit("east", basementTop);
+
+        basementTop.setExit("west", guestRoom);
+        basementTop.setExit("down", basementBottom);
+
+        basementBottom.setExit("north", emptyRoom);
+        basementBottom.setExit("west", cellar);
+        basementBottom.setExit("up", basementTop);
+
+        cellar.setExit("east", basementBottom);
+
+        emptyRoom.setExit("south", basementBottom);
+
+        mainTop.setExit("north", landing);
+        mainTop.setExit("down", mainBottom);
+
+        
+        landing.setExit("north", bathroom);
+        landing.setExit("south", mainTop);
+        landing.setExit("west", kidBedroom);
+        landing.setExit("east", masterBedroom);
+
+        kidBedroom.setExit("east", landing);
+
+        bathroom.setExit("south", landing);
+        bathroom.setExit("east", study);
+        
+        study.setExit("south", masterBedroom);
+        study.setExit("west", bathroom);
+
+        masterBedroom.setExit("north", study);
+        masterBedroom.setExit("west", landing);
+
+        currentRoom = foyer;  // start game outside
     }
 
     /**
@@ -96,9 +173,13 @@ public class Game
     private void printWelcome()
     {
         System.out.println();
-        System.out.println("Welcome to the World of Zuul!");
-        System.out.println("World of Zuul is a new, incredibly boring adventure game.");
+        System.out.println("Welcome to The Spooky Mansion");
+        System.out.println("The Spooky Mansion is a simple text-based adventure game.");
         System.out.println("Type '" + CommandWord.HELP + "' if you need help.");
+        System.out.println();
+        System.out.println("You approach an abandoned mansion and can't help but go inside.");
+        System.out.println("Why'd you do that?");
+        System.out.println("...");
         System.out.println();
         System.out.println(currentRoom.getLongDescription());
     }
@@ -133,6 +214,9 @@ public class Game
             case LOOK:
                 look();
                 break;
+            case EAT:
+                eat();
+                break;
         }
         return wantToQuit;
     }
@@ -146,11 +230,13 @@ public class Game
      */
     private void printHelp() 
     {
-        System.out.println("You are lost. You are alone. You wander");
-        System.out.println("around at the university.");
         System.out.println();
-        System.out.println("Your command words are:");
-        parser.showCommands();
+        System.out.println("You are scared and don't know what to do.");
+        System.out.println("You reach into your pocket and find a slip of paper.");
+        System.out.println("Where did that come from?");
+        System.out.println();
+        System.out.println("It lists your options:");
+        System.out.println(parser.showCommands());
     }
 
     /**
@@ -159,7 +245,18 @@ public class Game
      */
     private void look()
     {
+        System.out.println("\nYou look up to see what's around you.");
         System.out.println(currentRoom.getLongDescription());
+    }
+
+    /**
+     * Executes eating command
+     * 
+     */
+    private void eat()
+    {
+        System.out.println("\nYou eat a chocolate bar you found.");
+        System.out.println("Does your health go up?");
     }
 
     /** 
