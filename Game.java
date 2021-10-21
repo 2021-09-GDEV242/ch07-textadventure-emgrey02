@@ -1,18 +1,18 @@
 /**
- *  This class is the main class of the "World of Zuul" application. 
- *  "World of Zuul" is a very simple, text based adventure game.  Users 
- *  can walk around some scenery. That's all. It should really be extended 
- *  to make it more interesting!
+ *  This class is the main class of the "Spooky Mansion" application. 
+ *  "Spooky Mansion" is a text based adventure game.  Users 
+ *  can walk through a mansion infested with ghosts and hopefully make it
+ *  back out alive.
  * 
  *  To play this game, create an instance of this class and call the "play"
- *  method.
+ *  method. Outside of BlueJ, enter 'Java Game' into the command line.
  * 
  *  This main class creates and initializes all the others: it creates all
  *  rooms, creates the parser and starts the game.  It also evaluates and
  *  executes the commands that the parser returns.
  * 
- * @author  Michael Kölling and David J. Barnes
- * @version 2016.02.29
+ * @author  Emma Grey
+ * @version 2021.10.21
  */
 
 public class Game 
@@ -29,6 +29,12 @@ public class Game
         parser = new Parser();
     }
 
+    /**
+     * To run program outside of BlueJ, main method is included.
+     * It creates a new instance of the Game class and calls the
+     * play method to start the game.
+     * @param args user does not need to enter any arguments
+     */
     public static void main(String[] args)
     {
         Game newGame = new Game();
@@ -124,6 +130,9 @@ public class Game
             case QUIT:
                 wantToQuit = quit(command);
                 break;
+            case LOOK:
+                look();
+                break;
         }
         return wantToQuit;
     }
@@ -142,6 +151,15 @@ public class Game
         System.out.println();
         System.out.println("Your command words are:");
         parser.showCommands();
+    }
+
+    /**
+     * Print out long description: What room the user is currently
+     * in and the available exits
+     */
+    private void look()
+    {
+        System.out.println(currentRoom.getLongDescription());
     }
 
     /** 
