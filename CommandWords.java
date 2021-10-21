@@ -18,7 +18,7 @@ public class CommandWords
     private HashMap<String, CommandWord> validCommands;
 
     /**
-     * Constructor - initialise the command words.
+     * Constructor - initialize the command words.
      */
     public CommandWords()
     {
@@ -59,11 +59,12 @@ public class CommandWords
     /**
      * Print all valid commands to System.out.
      */
-    public void showAll() 
+    public String getCommandList() 
     {
+        String commandList = "";
         for(String command : validCommands.keySet()) {
-            System.out.print(command + "  ");
+            commandList += command + " ";
         }
-        System.out.println();
+        return commandList;
     }
 }
