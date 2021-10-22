@@ -334,8 +334,8 @@ public class Game
     }
     
     /**
-     * Get how many players are left in the game
-     * @return int  # of players left
+     * Get how many ghosts are still in the mansion.
+     * @return int  # of ghosts left
      */
     public static int getNumOfGhosts()
     {

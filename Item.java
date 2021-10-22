@@ -18,10 +18,12 @@ public class Item
     private String name;
     private boolean canBePickedUp;
     /**
-     * Create an item object, after supplying it with a description
-     * and a weight. 
-     * @param description  what the item is
-     * @param weight  how much the item weighs
+     * Create an item object, after supplying it with a name, description,
+     * weight (in spoops), and whether it can picked up. 
+     * @param itemName  name of the item
+     * @param itemDescription  what the item is
+     * @param itemWeight  how much the item weighs
+     * @param pickedUp  whether item can be picked up
      */
     public Item(String itemName, String itemDescription, int itemWeight, boolean pickedUp)
     {
@@ -32,7 +34,7 @@ public class Item
     }
 
     /**
-     * Return whether item can be picked up
+     * Return whether player can take the item.
      * @return boolean
      */
     public boolean isTakeable()
@@ -41,8 +43,8 @@ public class Item
     }
 
     /**
-     * Get and return the description of the current item.
-     * @return String  description of the item
+     * Return the description of the current item.
+     * @return description of the item
      */
     public String getDescription()
     {
@@ -50,8 +52,8 @@ public class Item
     }
 
     /**
-     * Get and return the weight of the current item.
-     * @return int  weight of the item
+     * Return the weight of the current item.
+     * @return weight of the item
      */
     public int getWeight()
     {
@@ -59,8 +61,8 @@ public class Item
     }
 
     /**
-     * Get and return the name of the current item.
-     * @return String  name of the item.
+     * Return the name of the current item.
+     * @return name of the item.
      */
     public String getName()
     {
@@ -69,7 +71,7 @@ public class Item
 
     /**
      * Return a string with all the details of the item.
-     * @return String  details about the item
+     * @return details about the item
      */
     public String getItemDetails()
     {

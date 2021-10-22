@@ -28,9 +28,8 @@ public class Room
     private boolean open;  
 
     /**
-     * Create a room described "description". Initially, it has
-     * no exits. "description" is something like "a kitchen" or
-     * "an open court yard".
+     * Create a room by providing a description and
+     * whether the room is unlocked.
      * @param description The room's description.
      * @param isOpen  boolean, true if the room is unlocked
      */
@@ -46,7 +45,7 @@ public class Room
     /**
      * Define an exit from this room.
      * @param direction The direction of the exit.
-     * @param neighbor  The room to which the exit leads.
+     * @param neighbor The room to which the exit leads.
      */
     public void setExit(String direction, Room neighbor) 
     {
@@ -54,7 +53,7 @@ public class Room
     }
 
     /**
-     * Define an item that's in this room
+     * Add an item to the room's inventory.
      * @param roomItem  Item object in the room
      */
     public void addItem(Item roomItem)
@@ -63,7 +62,7 @@ public class Room
     }
 
     /**
-     * Remove an item from the room.
+     * Remove an item from the room's inventory.
      * @param roomItem Item object in the room
      */
     public void removeItem(Item roomItem)
@@ -72,7 +71,7 @@ public class Room
     }
 
     /**
-     * See if the room is open/unlocked
+     * See if the room is open/unlocked.
      * @return boolean
      */
     public boolean isOpen() {
@@ -117,8 +116,8 @@ public class Room
     }
 
     /**
-     * Return ghost object that is in the room
-     * @return Player  ghost object
+     * Return ghost object that is in the room.
+     * @return Player object representing a ghost
      */
     public Player getGhost()
     {
@@ -129,8 +128,8 @@ public class Room
      * Return an item object given the item's name, if it
      * exists in the room. Otherwise it
      * returns null.
-     * @param itemName  name of the item
-     * @return Item  the corresponding item object in the room
+     * @param itemName name of the item
+     * @return corresponding item object in the room
      */
     public Item getItemFromRoom(String itemName)
     {
@@ -143,7 +142,8 @@ public class Room
     }
 
     /**
-     * @return The short description of the room
+     * Return short description of the room.
+     * @return The short description of the room.
      * (the one that was defined in the constructor).
      */
     public String getShortDescription()
@@ -152,10 +152,11 @@ public class Room
     }
 
     /**
-     * Return a description of the room in the form:
+     * Return a long description of the room.
      *     You are in the kitchen.
      *     items in the room...
      *     ghosts in the room...
+     *     How many ghosts left in the mansion...
      *     Exits: north west
      * @return A long description of this room
      */
