@@ -6,6 +6,7 @@ import java.util.ArrayList;
  */
 public class Player
 {
+    private static int counter;
     private Room currentRoom;
     private ArrayList<Item> inventory;
     private int maxWeight;
@@ -21,6 +22,11 @@ public class Player
         maxWeight = weight;
         health = 10;
         inventory = new ArrayList<Item>();
+        counter++;
+    }
+
+    public static int getNumOfPlayers() {
+      return counter;
     }
 
     /**
@@ -34,12 +40,31 @@ public class Player
 
     /**
      * Add an item into the Player's inventory to begin with. 
-     * Used mainly for ghosts.
+     * Used mainly for ghosts. Returns true if successful.
      * @param item  item to put in player's inventory
+     * @return boolean
      */
-    public void addItem(Item item)
+    public boolean addItem(Item item)
     {
+      if (getCurrentWeight() + item.getWeight() > maxWeight) {
+        System.out.println("\nThis item is too heavy.");
+        return false;
+      }
       inventory.add(item);
+      return true;
+    }
+
+    /**
+     * Check if item is tradeable
+     * @param item
+     */
+    public boolean tradeItem(Item item)
+    {
+      if (item.getWeight() > maxWeight) {
+        return false;
+      }
+      inventory.add(item);
+      return true;
     }
 
     /**
@@ -55,15 +80,16 @@ public class Player
     }
 
     /**
-     * Remove health from a player
+     * Remove health from a player. Return true if health gets to 0.
      * @param spoops  amount of health player looses
      */
-    public void damage(int spoops)
+    public boolean damage(int spoops)
     {
       health -= spoops;
       if (health <= 0) {
-
+          return true;
       }
+      return false;
     }
 
     /**
@@ -90,7 +116,7 @@ public class Player
      * @param itemName  name of item to return
      * @return Item  corresponding item object in player's inventory
      */
-    public Item getItemFromName(String itemName)
+    public Item getItemFromInventory(String itemName)
     {
         for (Item item : inventory) {
             if (itemName.equals(item.getName())) {
@@ -116,7 +142,7 @@ public class Player
               currentRoom.removeItem(currentItem);
               return true;
           } else {
-              System.out.println("This item is too heavy.\n");
+              System.out.println("This item doesn't fit in your inventory.\n");
           }
         } else {
           System.out.println("You don't need this item.\n");
@@ -131,8 +157,8 @@ public class Player
      */
     public void dropItem(Item currentItem)
     {
-      for (Item item : inventory) {
-        if (item == currentItem) {
+      for (int i=0; i< inventory.size(); i++) {
+        if (inventory.get(i) == currentItem) {
           inventory.remove(currentItem);
           currentRoom.addItem(currentItem);
         }

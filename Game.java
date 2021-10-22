@@ -87,8 +87,8 @@ public class Game
         doll = new Item("doll", "creepy doll", 4, false);
 
             //to eat
-        chocolate = new Item("chocolate","chocolate bar", 2, true);
-        candy = new Item("candy","fruit-by-the-foot", 3, true);
+        chocolate = new Item("chocolate","chocolate bar", 3, true);
+        candy = new Item("candy","fruit-by-the-foot", 2, true);
 
             //to use
         jacket = new Item("jacket","jacket", 3, true);
@@ -101,15 +101,17 @@ public class Game
 
         // initialize room exits, items, and ghosts
         foyer.setExit("north", mainHall);
+        foyer.addItem(chocolate);
+        foyer.addItem(scarf);
 
         mainHall.setExit("north", mainBottom);
         mainHall.setExit("south", foyer);
         mainHall.setExit("west", library);
         mainHall.setExit("east", diningRoom);
-        Player ghost1 = new Player(5);
+        mainHall.addItem(necklace);
+        Player ghost1 = new Player(3);
         ghost1.setRoom(mainHall);
         ghost1.addItem(chocolate);
-        ghost1.addItem(candy);
         mainHall.addGhost(ghost1);
         
         library.setExit("west", lounge);
@@ -119,13 +121,13 @@ public class Game
         lounge.setExit("north", garden);
         lounge.setExit("south", patio);
         lounge.setExit("east", library);
-        lounge.addItem(necklace);
+        Player ghost2 = new Player(2);
+        ghost2.setRoom(lounge);
+        ghost2.addItem(candy);
+        lounge.addGhost(ghost2);
 
         garden.setExit("south", lounge);
-        Player ghost2 = new Player(2);
-        ghost2.setRoom(garden);
-        ghost2.addItem(candy);
-        garden.addGhost(ghost2);
+        garden.addItem(necklace);
 
         patio.setExit("north", lounge);
         patio.addItem(key);
@@ -137,18 +139,17 @@ public class Game
         diningRoom.setExit("north", kitchen);
         diningRoom.setExit("west", mainHall);
         diningRoom.addItem(jacket);
-        Player ghost3 = new Player(4);
-        ghost2.setRoom(diningRoom);
-        ghost2.addItem(note);
-        ghost2.addItem(chocolate);
+        Player ghost3 = new Player(3);
+        ghost3.setRoom(diningRoom);
+        ghost3.addItem(chocolate);
         diningRoom.addGhost(ghost3);
         
         kitchen.setExit("north", laundry);
         kitchen.setExit("south", diningRoom);
         kitchen.setExit("west", mainBottom);
         kitchen.setExit("east", livingRoom);
-        foyer.addItem(chocolate);
-        foyer.addItem(candy);
+        kitchen.addItem(key);
+        
 
         laundry.setExit("south", kitchen);
         laundry.setExit("east", guestRoom);
@@ -160,11 +161,13 @@ public class Game
         livingRoom.setExit("north", guestRoom);
         livingRoom.setExit("west", kitchen);
         livingRoom.addItem(scarf);
+        livingRoom.addItem(necklace);
 
         guestRoom.setExit("south", livingRoom);
         guestRoom.setExit("west", laundry);
         guestRoom.setExit("east", basementTop);
         guestRoom.addItem(jacket);
+        guestRoom.addItem(ring);
 
         basementTop.setExit("west", guestRoom);
         basementTop.setExit("down", basementBottom);
@@ -175,6 +178,7 @@ public class Game
 
         cellar.setExit("east", basementBottom);
         cellar.addItem(flashlight);
+        cellar.addItem(ring);
         Player ghost5 = new Player(3);
         ghost5.setRoom(cellar);
         ghost5.addItem(chocolate);
@@ -193,10 +197,9 @@ public class Game
         kidBedroom.setExit("east", landing);
         kidBedroom.addItem(doll);
         kidBedroom.addItem(candy);
-        Player ghost6 = new Player(3);
+        Player ghost6 = new Player(2);
         ghost6.setRoom(kidBedroom);
         ghost6.addItem(candy);
-        ghost6.addItem(note);
         kidBedroom.addGhost(ghost6);
 
         bathroom.setExit("south", landing);
@@ -207,8 +210,8 @@ public class Game
         study.setExit("west", bathroom);
         study.addItem(note);
         Player ghost7 = new Player(3);
-        ghost6.setRoom(study);
-        ghost6.addItem(chocolate);
+        ghost7.setRoom(study);
+        ghost7.addItem(chocolate);
         study.addGhost(ghost7);
 
         masterBedroom.setExit("north", study);
@@ -233,6 +236,9 @@ public class Game
         while (! finished) {
             Command command = parser.getCommand();
             finished = processCommand(command);
+            if (isGameOver()) {
+                finished = true;
+            }
         }
         System.out.println("Thank you for playing. Good bye.");
     }
@@ -249,7 +255,6 @@ public class Game
         System.out.println();
         System.out.println("You approach an abandoned mansion and can't help but go inside.");
         System.out.println("Why'd you do that?");
-        System.out.println();
         System.out.println();
         System.out.println(player.getRoom().getLongDescription());
     }
@@ -311,7 +316,7 @@ public class Game
                 break;
             
             case TRADE:
-                trade();
+                trade(command);
                 break;
         }
         return wantToQuit;
@@ -336,12 +341,52 @@ public class Game
     }
 
     /**
-     * Trade a jewelry item for an item in the ghost's inventory
-     * @param
+     * Trade a jewelry item for the item in the ghost's inventory
+     * @param command  
      */
-    private void trade()
+    private void trade(Command command)
     {
-        
+        if(!command.hasSecondWord()) {
+            // if there is no second word, we don't know what to trade...
+            System.out.println("\nWhat item do you want to trade?");
+            return;
+        }
+
+        String itemString = command.getSecondWord();
+        Item currentItem = player.getItemFromInventory(itemString);
+        if (currentItem == null) {
+            System.out.println("\nYou don't have this item to trade.");
+            return;
+        }
+        Player currentGhost = player.getRoom().getGhost();
+        String ghostItemString = currentGhost.getPlayerInventory();
+
+        if (itemString.equals("necklace") || itemString.equals("ring")) {
+            if (currentGhost.tradeItem(currentItem)) {
+                if (ghostItemString.contains("candy")) {
+                    Item ghostItem = currentGhost.getItemFromInventory("candy");
+                    if (!player.tradeItem(ghostItem)) {
+                        System.out.println("\nYour inventory is too heavy to trade with this ghost right now.");
+                        return;
+                    }
+                }
+                if (ghostItemString.contains("chocolate")) {
+                    Item ghostItem = currentGhost.getItemFromInventory("chocolate");
+                    if (!player.tradeItem(ghostItem)) {
+                        System.out.println("\nYour inventory is too heavy to trade with this ghost right now.");
+                        return;
+                    }
+                }
+                player.removeItem(currentItem);
+                System.out.println("\nYou have traded with the ghost. It won't spook you anymore.");
+                player.getRoom().removeGhost(currentGhost);
+            } else {
+                System.out.println("\nThat won't fit into the ghost's inventory.");
+            }
+        } else {
+            System.out.println("\nThe ghost only wants jewelry.");
+        }
+
     }
 
     /**
@@ -376,7 +421,7 @@ public class Game
             System.out.println("You eat candy. Your health increases by 2 spoops.");
             player.addHealth(2);
         } 
-        Item currentItem = player.getItemFromName(foodItem);
+        Item currentItem = player.getItemFromInventory(foodItem);
         player.removeItem(currentItem);
     }
 
@@ -399,6 +444,7 @@ public class Game
 
         if (nextRoom == null) {
             System.out.println("\nThere is no door!");
+            return;
         }
         if (!nextRoom.isOpen()) {
             System.out.println("\nThis door is locked. Use a key to unlock it.");
@@ -426,7 +472,7 @@ public class Game
             return;
         }
         String itemName = command.getSecondWord();
-        Item currentItem = player.getRoom().getItemFromName(itemName);
+        Item currentItem = player.getRoom().getItemFromRoom(itemName);
         if (player.pickUpItem(currentItem)) {
             System.out.println("\nYou picked up an item.");
         }
@@ -444,7 +490,7 @@ public class Game
             return;
         }
         String itemName = command.getSecondWord();
-        Item currentItem = player.getItemFromName(itemName);
+        Item currentItem = player.getItemFromInventory(itemName);
         player.dropItem(currentItem);
         System.out.println("\nYou dropped an item.");
     }
@@ -461,18 +507,33 @@ public class Game
             return;
         }
         String itemName = command.getSecondWord();
-        if (itemName == "key") {
-            player.getRoom().unlock();
+        Item currentItem = player.getItemFromInventory(itemName);
+        if (currentItem == null) {
+            System.out.println("\nYou don't have that item.");
+            return;
+        }
+        if (itemName.equals("key")) {
+            System.out.println("\nWhich door? (use go command)");
+            Command secondCommand = parser.getCommand();
+            String direction = secondCommand.getSecondWord();
+            Room nextRoom = player.getRoom().getExit(direction);
+            nextRoom.unlock();
             System.out.println("\nYou unlocked the door. You wonder what could be on the other side.");
-        } if (itemName == "jacket") {
+            player.removeItem(currentItem);
+            return;
+        } else if (itemName.equals("jacket")) {
             player.addHealth(3);
             System.out.println("\nYou put on the oversized jacket. It increases your health by 3 spoops.");
-        } if (itemName == "scarf") {
+            player.removeItem(currentItem);
+            return;
+        } else if (itemName.equals("scarf")) {
             player.addHealth(2);
             System.out.println("\nYou wrap the scarf around you. It warms you up a bit and increases your health by 3 spoops.");
-        } else {
-            System.out.println("\nYou can't use this item.");
-        }
+            player.removeItem(currentItem);
+            return;
+        } 
+        System.out.println("\nYou can't use this item.");
+        
     }
 
     /**
@@ -510,5 +571,23 @@ public class Game
         else {
             return true;  // signal that we want to quit
         }
+    }
+
+    /**
+     * Checks if the player's health is depleted, or if
+     * the player successfully removed all the ghosts.
+     * Otherwise, the game isn't over.
+     */
+    public boolean isGameOver()
+    {
+        if (player.getHealth() <= 0) {
+            System.out.println("\nYou have been spooked to death... RIP");
+            return true;
+        }
+        if (Player.getNumOfPlayers() == 1) {
+            System.out.println("\nYou cleared the mansion of ghosts!\nThe front door opens and you sprint home. Phew.");
+            return true;
+        }
+        return false;
     }
 }

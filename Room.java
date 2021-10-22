@@ -92,6 +92,15 @@ public class Room
     }
 
     /**
+     * Remove ghost from room after successful trade.
+     * @param ghost
+     */
+    public void removeGhost(Player ghostPlayer)
+    {
+        ghost.remove(ghostPlayer);
+    }
+
+    /**
      * Check room for ghosts.
      * @return boolean 
      */
@@ -119,7 +128,7 @@ public class Room
      * @param itemName  name of the item
      * @return Item  the corresponding item object in the room
      */
-    public Item getItemFromName(String itemName)
+    public Item getItemFromRoom(String itemName)
     {
         for (Item item : items) {
             if (itemName.equals(item.getName())) {
@@ -164,8 +173,8 @@ public class Room
         if (checkForGhost()) {
             System.out.println("\nBOO!!!\n");
             System.out.println("You are spooked by a ghost and lost 3 spoops of health.");
-            System.out.println("You can trade jewelry for any item the ghost has, and it will leave. \nOtherwise, it could scare you again.");
-            System.out.println("The ghost has these items for trading: " + getGhost().getPlayerInventory());
+            System.out.println("You can trade jewelry for any item the ghost has, and it will leave. \nOtherwise, it will scare you again.");
+            System.out.println("The ghost has this item to trade: " + getGhost().getPlayerInventory());
         }
 
         return longDescription + "\n" + getExitString();
