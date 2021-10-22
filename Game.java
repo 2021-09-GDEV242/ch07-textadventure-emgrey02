@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 /**
  *  This class is the main class of the "Spooky Mansion" application. 
  *  "Spooky Mansion" is a text based adventure game.  Users 
@@ -9,7 +10,8 @@
  * 
  *  This main class creates and initializes all the others: it creates all
  *  rooms, creates the parser and starts the game.  It also evaluates and
- *  executes the commands that the parser returns.
+ *  executes the commands that the parser returns.It also keeps an updated list of
+ *  ghosts in the mansion at any time.
  * 
  * @author  Emma Grey
  * @version 2021.10.21
@@ -19,6 +21,7 @@ public class Game
 {
     private Parser parser;
     private Player player;
+    private static ArrayList<Player> ghosts;
     /**
      * Create the game, initialize its internal map, and create a
      * player.
@@ -26,6 +29,7 @@ public class Game
     public Game() 
     {
         player = new Player(10);
+        ghosts = new ArrayList<Player>();
         createRooms();
         parser = new Parser();
     }
@@ -113,6 +117,7 @@ public class Game
         ghost1.setRoom(mainHall);
         ghost1.addItem(chocolate);
         mainHall.addGhost(ghost1);
+        ghosts.add(ghost1);
         
         library.setExit("west", lounge);
         library.setExit("east", mainHall);
@@ -125,6 +130,7 @@ public class Game
         ghost2.setRoom(lounge);
         ghost2.addItem(candy);
         lounge.addGhost(ghost2);
+        ghosts.add(ghost2);
 
         garden.setExit("south", lounge);
         garden.addItem(necklace);
@@ -143,6 +149,7 @@ public class Game
         ghost3.setRoom(diningRoom);
         ghost3.addItem(chocolate);
         diningRoom.addGhost(ghost3);
+        ghosts.add(ghost3);
         
         kitchen.setExit("north", laundry);
         kitchen.setExit("south", diningRoom);
@@ -157,6 +164,7 @@ public class Game
         ghost4.setRoom(laundry);
         ghost4.addItem(candy);
         laundry.addGhost(ghost4);
+        ghosts.add(ghost4);
 
         livingRoom.setExit("north", guestRoom);
         livingRoom.setExit("west", kitchen);
@@ -183,6 +191,7 @@ public class Game
         ghost5.setRoom(cellar);
         ghost5.addItem(chocolate);
         cellar.addGhost(ghost5);
+        ghosts.add(ghost5);
 
         emptyRoom.setExit("south", basementBottom);
 
@@ -201,6 +210,7 @@ public class Game
         ghost6.setRoom(kidBedroom);
         ghost6.addItem(candy);
         kidBedroom.addGhost(ghost6);
+        ghosts.add(ghost6);
 
         bathroom.setExit("south", landing);
         bathroom.setExit("east", study);
@@ -213,6 +223,7 @@ public class Game
         ghost7.setRoom(study);
         ghost7.addItem(chocolate);
         study.addGhost(ghost7);
+        ghosts.add(ghost7);
 
         masterBedroom.setExit("north", study);
         masterBedroom.setExit("west", landing);
@@ -254,7 +265,7 @@ public class Game
         System.out.println("Type '" + CommandWord.HELP + "' if you need help.");
         System.out.println();
         System.out.println("You approach an abandoned mansion and can't help but go inside.");
-        System.out.println("Why'd you do that?");
+        System.out.println("The front door slams shut behind you...");
         System.out.println();
         System.out.println(player.getRoom().getLongDescription());
     }
@@ -321,7 +332,15 @@ public class Game
         }
         return wantToQuit;
     }
-
+    
+    /**
+     * Get how many players are left in the game
+     * @return int  # of players left
+     */
+    public static int getNumOfGhosts()
+    {
+        return ghosts.size();
+    }
     // implementations of user commands:
 
     /**
@@ -380,6 +399,7 @@ public class Game
                 player.removeItem(currentItem);
                 System.out.println("\nYou have traded with the ghost. It won't spook you anymore.");
                 player.getRoom().removeGhost(currentGhost);
+                ghosts.remove(currentGhost);
             } else {
                 System.out.println("\nThat won't fit into the ghost's inventory.");
             }
@@ -473,6 +493,10 @@ public class Game
         }
         String itemName = command.getSecondWord();
         Item currentItem = player.getRoom().getItemFromRoom(itemName);
+        if (currentItem == null) {
+            System.out.println("\nYou can't take that...");
+            return;
+        }
         if (player.pickUpItem(currentItem)) {
             System.out.println("\nYou picked up an item.");
         }
@@ -584,7 +608,7 @@ public class Game
             System.out.println("\nYou have been spooked to death... RIP");
             return true;
         }
-        if (Player.getNumOfPlayers() == 1) {
+        if (ghosts.size() == 0) {
             System.out.println("\nYou cleared the mansion of ghosts!\nThe front door opens and you sprint home. Phew.");
             return true;
         }

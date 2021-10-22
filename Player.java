@@ -1,12 +1,22 @@
 import java.util.ArrayList;
 
 /**
+ * Class Player - the main player and ghosts in the mansion.
+ * 
+ * This class is part of The Spooky Mansion application. 
+ * The Spooky Mansion is a very simple, text based adventure game.
+ * 
  * This class creates a Player, which stores the current room the
- * player is in and an inventory with a max capacity
+ * player is in, an inventory with a max weight capacity, and health
+ * starting at 10 spoops.
+ * 
+ * The single player has an inventory capacity of 10 spoops, while 
+ * ghosts have a capacity of 2 or 3 spoops (depending on if they hold
+ * candy or chocolate).
+ * 
  */
 public class Player
 {
-    private static int counter;
     private Room currentRoom;
     private ArrayList<Item> inventory;
     private int maxWeight;
@@ -22,11 +32,6 @@ public class Player
         maxWeight = weight;
         health = 10;
         inventory = new ArrayList<Item>();
-        counter++;
-    }
-
-    public static int getNumOfPlayers() {
-      return counter;
     }
 
     /**
@@ -56,7 +61,8 @@ public class Player
 
     /**
      * Check if item is tradeable
-     * @param item
+     * @param item  item that player wants to trade
+     * @return boolean  if item is tradeable
      */
     public boolean tradeItem(Item item)
     {

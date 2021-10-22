@@ -3,17 +3,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Class Room - a room in an adventure game.
+ * Class Room - a room in the mansion.
  *
- * This class is part of the "World of Zuul" application. 
- * "World of Zuul" is a very simple, text based adventure game.  
+ * This class is part of The Spooky Mansion application. 
+ * The Spooky Mansion is a very simple, text based adventure game.  
  *
  * A "Room" represents one location in the scenery of the game.  It is 
  * connected to other rooms via exits.  For each existing exit, the room 
- * stores a reference to the neighboring room.
+ * stores a reference to the neighboring room. A room can hold any amount
+ * of items to be picked up by the player, a room can have a ghost
+ * in it, and it can be locked.
  * 
- * @author  Michael Kölling and David J. Barnes
- * @version 2016.02.29
+ * 
+ * @author  Emma Grey
+ * @version 2021.10.22
  */
 
 public class Room 
@@ -29,6 +32,7 @@ public class Room
      * no exits. "description" is something like "a kitchen" or
      * "an open court yard".
      * @param description The room's description.
+     * @param isOpen  boolean, true if the room is unlocked
      */
     public Room(String description, boolean isOpen) 
     {
@@ -93,7 +97,7 @@ public class Room
 
     /**
      * Remove ghost from room after successful trade.
-     * @param ghost
+     * @param ghost a Player object representing a ghost
      */
     public void removeGhost(Player ghostPlayer)
     {
@@ -176,6 +180,7 @@ public class Room
             System.out.println("You can trade jewelry for any item the ghost has, and it will leave. \nOtherwise, it will scare you again.");
             System.out.println("The ghost has this item to trade: " + getGhost().getPlayerInventory());
         }
+        System.out.println("\nThere are " + Game.getNumOfGhosts() + " ghosts left in the mansion.");
 
         return longDescription + "\n" + getExitString();
     

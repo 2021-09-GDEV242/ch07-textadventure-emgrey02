@@ -1,6 +1,14 @@
 /**
- * This class holds information about an item in The Spooky Mansion game. 
- * Each item has a (String) description and a (integer) weight. 
+ * Class Item - an item in The Spooky Mansion game.
+ * 
+ * This class is part of The Spooky Mansion application. 
+ * The Spooky Mansion is a very simple, text based adventure game.
+ * 
+ * Each item has a (String) description, a (integer) weight, a (String) name,
+ * and a boolean for whether the item can be picked up. 
+ * 
+ * @author Emma Grey
+ * @version 2021.10.22
  */
 
 public class Item 
@@ -23,14 +31,14 @@ public class Item
         canBePickedUp = pickedUp;
     }
 
-	/**
-	 * Return whether item can be picked up
-	 * @return boolean
-	 */
-	public boolean isTakeable()
-	{
-		return canBePickedUp;
-	}
+    /**
+     * Return whether item can be picked up
+     * @return boolean
+     */
+    public boolean isTakeable()
+    {
+        return canBePickedUp;
+    }
 
     /**
      * Get and return the description of the current item.
