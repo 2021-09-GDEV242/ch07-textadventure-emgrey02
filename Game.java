@@ -18,13 +18,22 @@
 public class Game 
 {
     private Parser parser;
-    private Room currentRoom;
+    private Player player;
+
+    //text colors :)
+    public static final String TEXT_RED = "\u001B[31m";
+    public static final String TEXT_CYAN = "\u001B[36m";
+    public static final String TEXT_YELLOW = "\u001B[33m";
+    public static final String TEXT_RESET = "\u001B[0m";
+    public static final String TEXT_GREEN = "\u001B[32m";
         
     /**
-     * Create the game and initialize its internal map.
+     * Create the game, initialize its internal map, and create a
+     * player.
      */
     public Game() 
     {
+        player = new Player(10);
         createRooms();
         parser = new Parser();
     }
@@ -47,6 +56,8 @@ public class Game
     private void createRooms()
     {
         Room foyer, mainHall, diningRoom, kitchen, livingRoom, guestRoom, laundry, basementTop, basementBottom, cellar, emptyRoom, mainBottom, mainTop, library, lounge, patio, garden, landing, masterBedroom, study, bathroom, kidBedroom;
+
+        Item key, chocolate, flashlight, candy, note, dagger, jacket, scarf, ring;
       
         // create the rooms
         foyer = new Room("in the foyer of the Spooky Mansion.");
@@ -72,10 +83,23 @@ public class Game
         bathroom = new Room("in the bathroom. The toilet water is black. Yuck.");
         kidBedroom = new Room("in a child's bedroom. Why is that doll looking at you?");
         
+        //create items
+        key = new Item("key","rusty key", 3, true);
+        chocolate = new Item("chocolate","chocolate bar", 2, true);
+        flashlight = new Item("flashlight","flashlight", 3, false);
+        candy = new Item("candy","fruit-by-the-foot", 2, true);
+        note = new Item("note","cryptic note that means nothing", 1, false);
+        dagger = new Item("dagger","dagger", 4, true);
+        jacket = new Item("jacket","jacket", 3, true);
+        scarf = new Item("scarf","scarf", 2, true);
+        ring = new Item("ring","diamond ring", 3, true);
 
-        
+
+
         // initialize room exits
         foyer.setExit("north", mainHall);
+        foyer.addItem(chocolate);
+        foyer.addItem(candy);
 
         mainHall.setExit("north", mainBottom);
         mainHall.setExit("south", foyer);
@@ -84,12 +108,14 @@ public class Game
         
         library.setExit("west", lounge);
         library.setExit("east", mainHall);
+        library.addItem(key);
 
         lounge.setExit("north", garden);
         lounge.setExit("south", patio);
         lounge.setExit("east", library);
 
         garden.setExit("south", lounge);
+        garden.addItem(dagger);
 
         patio.setExit("north", lounge);
 
@@ -99,6 +125,7 @@ public class Game
 
         diningRoom.setExit("north", kitchen);
         diningRoom.setExit("west", mainHall);
+        diningRoom.addItem(jacket);
         
         kitchen.setExit("north", laundry);
         kitchen.setExit("south", diningRoom);
@@ -123,13 +150,13 @@ public class Game
         basementBottom.setExit("up", basementTop);
 
         cellar.setExit("east", basementBottom);
+        cellar.addItem(flashlight);
 
         emptyRoom.setExit("south", basementBottom);
 
         mainTop.setExit("north", landing);
         mainTop.setExit("down", mainBottom);
 
-        
         landing.setExit("north", bathroom);
         landing.setExit("south", mainTop);
         landing.setExit("west", kidBedroom);
@@ -142,11 +169,14 @@ public class Game
         
         study.setExit("south", masterBedroom);
         study.setExit("west", bathroom);
+        study.addItem(note);
 
         masterBedroom.setExit("north", study);
         masterBedroom.setExit("west", landing);
+        masterBedroom.addItem(scarf);
+        masterBedroom.addItem(ring);
 
-        currentRoom = foyer;  // start game outside
+        player.setRoom(foyer);
     }
 
     /**
@@ -164,7 +194,7 @@ public class Game
             Command command = parser.getCommand();
             finished = processCommand(command);
         }
-        System.out.println("Thank you for playing.  Good bye.");
+        System.out.println("Thank you for playing. Good bye.");
     }
 
     /**
@@ -173,15 +203,15 @@ public class Game
     private void printWelcome()
     {
         System.out.println();
-        System.out.println("Welcome to The Spooky Mansion");
+        System.out.println("Welcome to " + TEXT_RED + "The Spooky Mansion" + TEXT_RESET);
         System.out.println("The Spooky Mansion is a simple text-based adventure game.");
         System.out.println("Type '" + CommandWord.HELP + "' if you need help.");
         System.out.println();
         System.out.println("You approach an abandoned mansion and can't help but go inside.");
         System.out.println("Why'd you do that?");
-        System.out.println("...");
         System.out.println();
-        System.out.println(currentRoom.getLongDescription());
+        System.out.println();
+        System.out.println(player.getRoom().getLongDescription());
     }
 
     /**
@@ -197,7 +227,7 @@ public class Game
 
         switch (commandWord) {
             case UNKNOWN:
-                System.out.println("I don't know what you mean...");
+                System.out.println(TEXT_RED + "\nI don't know what you mean..." + TEXT_RESET);
                 break;
 
             case HELP:
@@ -211,11 +241,25 @@ public class Game
             case QUIT:
                 wantToQuit = quit(command);
                 break;
+
             case LOOK:
                 look();
                 break;
+
             case EAT:
                 eat();
+                break;
+            
+            case TAKE:
+                take(command);
+                break;
+            
+            case DROP:
+                drop(command);
+                break;
+            
+            case ITEMS:
+                listItems();
                 break;
         }
         return wantToQuit;
@@ -236,7 +280,7 @@ public class Game
         System.out.println("Where did that come from?");
         System.out.println();
         System.out.println("It lists your options:");
-        System.out.println(parser.showCommands());
+        System.out.println(TEXT_GREEN + parser.showCommands() + TEXT_RESET);
     }
 
     /**
@@ -246,7 +290,7 @@ public class Game
     private void look()
     {
         System.out.println("\nYou look up to see what's around you.");
-        System.out.println(currentRoom.getLongDescription());
+        System.out.println(player.getRoom().getLongDescription());
     }
 
     /**
@@ -267,21 +311,73 @@ public class Game
     {
         if(!command.hasSecondWord()) {
             // if there is no second word, we don't know where to go...
-            System.out.println("Go where?");
+            System.out.println(TEXT_RED + "\nGo where?" + TEXT_RESET);
             return;
         }
 
         String direction = command.getSecondWord();
 
         // Try to leave current room.
-        Room nextRoom = currentRoom.getExit(direction);
+        Room nextRoom = player.getRoom().getExit(direction);
 
         if (nextRoom == null) {
-            System.out.println("There is no door!");
+            System.out.println(TEXT_RED + "\nThere is no door!" + TEXT_RESET);
         }
         else {
-            currentRoom = nextRoom;
-            System.out.println(currentRoom.getLongDescription());
+            player.setRoom(nextRoom);
+            System.out.println(player.getRoom().getLongDescription());
+        }
+    }
+
+    /**
+     * Try to pick up an item. If the Person can fit it in their inventory,
+     * and the item is able to be picked up, take the item. Otherwise,
+     * print an error message.
+     * @param command
+     */
+    private void take(Command command)
+    {
+        if(!command.hasSecondWord()) {
+            // if there is no second word, we don't know what to pick up
+            System.out.println(TEXT_RED + "\nWhat item do you want to take?" + TEXT_RESET);
+            return;
+        }
+
+        String itemName = command.getSecondWord();
+        Item currentItem = player.getRoom().getItemFromName(itemName);
+        if (player.pickUpItem(currentItem)) {
+            System.out.println(TEXT_GREEN + "\nYou picked up an item." + TEXT_RESET);
+        }
+        
+    }
+
+    /**
+     * Drop an item and leave it in the room the Person is currently in.
+     * @param command
+     */
+    private void drop(Command command)
+    {
+        if(!command.hasSecondWord()) {
+            // if there is no second word, we don't know what to pick up
+            System.out.println(TEXT_RED + "\nWhat item do you want to drop?" + TEXT_RESET);
+            return;
+        }
+        String itemName = command.getSecondWord();
+        Item currentItem = player.getItemFromName(itemName);
+        player.dropItem(currentItem);
+        System.out.println(TEXT_GREEN + "\nYou dropped an item." + TEXT_RESET);
+    }
+
+    /**
+     * print the player's inventory
+     * @return String  player's inventory
+     */
+    private void listItems()
+    {   
+        if (player.getPlayerInventory() == "") {
+            System.out.println(TEXT_GREEN + "\nYour inventory is now empty.\n" + TEXT_RESET);
+        } else {
+            System.out.println(TEXT_GREEN + "\nCurrent inventory: " + TEXT_RESET + player.getPlayerInventory() + "\n");
         }
     }
 
@@ -293,7 +389,7 @@ public class Game
     private boolean quit(Command command) 
     {
         if(command.hasSecondWord()) {
-            System.out.println("Quit what?");
+            System.out.println(TEXT_RED + "\nQuit what?" + TEXT_RESET);
             return false;
         }
         else {

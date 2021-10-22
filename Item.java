@@ -5,19 +5,22 @@
 
 public class Item 
 {
-	private String itemDescription;
-	private int itemWeight;
-
+	private String description;
+	private int weight;
+	private String name;
+	private boolean canBePickedUp;
 	/**
 	 * Create an item object, after supplying it with a description
 	 * and a weight. 
 	 * @param description  what the item is
 	 * @param weight  how much the item weighs
 	 */
-	public Item(String description, int weight)
+	public Item(String itemName, String itemDescription, int itemWeight, boolean pickedUp)
 	{
-		itemDescription = description;
-		itemWeight = weight;
+		description = itemDescription;
+		weight = itemWeight;
+		name = itemName;
+		canBePickedUp = pickedUp;
 	}
 
 	/**
@@ -26,7 +29,7 @@ public class Item
 	 */
 	public String getDescription()
 	{
-		return itemDescription;
+		return description;
 	}
 
 	/**
@@ -35,7 +38,16 @@ public class Item
 	 */
 	public int getWeight()
 	{
-		return itemWeight;
+		return weight;
+	}
+
+	/**
+	 * Get and return the name of the current item.
+	 * @return String  name of the item.
+	 */
+	public String getName()
+	{
+		return name;
 	}
 
 	/**
@@ -44,7 +56,7 @@ public class Item
 	 */
 	public String getItemDetails()
 	{
-		String combine = "This item is a " + itemDescription + ".\n It weighs " + itemWeight + " spooks.";
+		String combine = "A " + Game.TEXT_RED + description + Game.TEXT_RESET + " that weighs " + Game.TEXT_RED + weight + " spoops." + Game.TEXT_RESET + "  (Item name: " + Game.TEXT_GREEN + name + Game.TEXT_RESET + ")";
 		return combine;
 	}
 }

@@ -1,6 +1,6 @@
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Class Room - a room in an adventure game.
@@ -19,7 +19,8 @@ import java.util.Iterator;
 public class Room 
 {
     private String description;
-    private HashMap<String, Room> exits;        // stores exits of this room.
+    private HashMap<String, Room> exits;  // stores exits of this room.
+    private ArrayList<Item> items;        // stores items in this room
 
     /**
      * Create a room described "description". Initially, it has
@@ -31,6 +32,7 @@ public class Room
     {
         this.description = description;
         exits = new HashMap<>();
+        items = new ArrayList<Item>();
     }
 
     /**
@@ -44,6 +46,40 @@ public class Room
     }
 
     /**
+     * Define an item that's in this room
+     * @param roomItem  Item object in the room
+     */
+    public void addItem(Item roomItem)
+    {
+        items.add(roomItem);
+    }
+
+    /**
+     * Remove an item from the room.
+     * @param roomItem Item object in the room
+     */
+    public void removeItem(Item roomItem)
+    {
+        items.remove(roomItem);
+    }
+
+    /**
+	 * Return an item given the item's name, otherwise it
+     * returns null.
+	 * @param itemName  name of the item
+	 * @return Item  the corresponding item object in the room
+	 */
+	public Item getItemFromName(String itemName)
+	{
+        for (Item item : items) {
+            if (itemName.equals(item.getName())) {
+                return item;
+            }
+        }
+        return null;
+	}
+
+    /**
      * @return The short description of the room
      * (the one that was defined in the constructor).
      */
@@ -55,12 +91,28 @@ public class Room
     /**
      * Return a description of the room in the form:
      *     You are in the kitchen.
+     *     items in the room...
      *     Exits: north west
      * @return A long description of this room
      */
     public String getLongDescription()
-    {
-        return "\nYou are " + description + "\n\n" + getExitString();
+    {   
+        String longDescription = Game.TEXT_CYAN + "\nYou are " + description + "\n" + Game.TEXT_RESET;
+
+        if (items.size() > 0) {
+            if (items.size() > 1) {
+                longDescription += "\nYou see some items on the ground:";
+            } else {
+                longDescription += "\nYou see something on the ground:";
+            }
+            for (Item item : items) {
+                longDescription += "\n" + item.getItemDetails();
+            }
+            longDescription += "\n";
+        }
+
+        return longDescription + Game.TEXT_YELLOW + "\n" + getExitString() + Game.TEXT_RESET;
+    
     }
 
     /**
