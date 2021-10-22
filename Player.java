@@ -33,6 +33,40 @@ public class Player
     }
 
     /**
+     * Add an item into the Player's inventory to begin with. 
+     * Used mainly for ghosts.
+     * @param item  item to put in player's inventory
+     */
+    public void addItem(Item item)
+    {
+      inventory.add(item);
+    }
+
+    /**
+     * Add health to a player
+     * @param spoops  amount of health that player gains
+     */
+    public void addHealth(int spoops)
+    {
+      health += spoops;
+      if (health > 10) {
+        health = 10;
+      }
+    }
+
+    /**
+     * Remove health from a player
+     * @param spoops  amount of health player looses
+     */
+    public void damage(int spoops)
+    {
+      health -= spoops;
+      if (health <= 0) {
+
+      }
+    }
+
+    /**
      * Get the room the player is currently in.
      */
     public Room getRoom()
@@ -41,8 +75,19 @@ public class Player
     }
 
     /**
-     * Get the item object from the item name
-     * @param itemName
+     * Get the current health of the player.
+     * @return health  integer of spoops of health
+     */
+    public int getHealth()
+    {
+      return health;
+    }
+
+    /**
+     * Return the item object that corresponds to an item's name, if
+     * it exists in the player's inventory. Otherwise, it returns
+     * null.
+     * @param itemName  name of item to return
      * @return Item  corresponding item object in player's inventory
      */
     public Item getItemFromName(String itemName)
@@ -57,19 +102,24 @@ public class Player
 
     /**
      * Pick up an item and store it in the inventory. If adding
-     * the item puts the inventory over its max weight, the item isn't
-     * picked up. Returns boolean if successful or not.
+     * the item puts the inventory over its max weight, or it can't
+     * be picked up, then the item isn't
+     * picked up. Returns a boolean if successful or not.
      * @param currentItem  item that player wants to pick up
      * @return boolean
      */
     public boolean pickUpItem(Item currentItem)
     {
-        if (getCurrentWeight() + currentItem.getWeight() <= maxWeight) {
-            inventory.add(currentItem);
-            currentRoom.removeItem(currentItem);
-            return true;
+        if (currentItem.isTakeable()) {
+          if (getCurrentWeight() + currentItem.getWeight() <= maxWeight) {
+              inventory.add(currentItem);
+              currentRoom.removeItem(currentItem);
+              return true;
+          } else {
+              System.out.println("This item is too heavy.\n");
+          }
         } else {
-            System.out.println(Game.TEXT_RED + "This item is too heavy.\n" + Game.TEXT_RESET);
+          System.out.println("You don't need this item.\n");
         }
         return false;
     }
@@ -81,18 +131,26 @@ public class Player
      */
     public void dropItem(Item currentItem)
     {
-      
-      inventory.remove(currentItem);
-      currentRoom.addItem(currentItem);
-    }
-
-    public int getMaxWeight()
-    {
-      return maxWeight;
+      for (Item item : inventory) {
+        if (item == currentItem) {
+          inventory.remove(currentItem);
+          currentRoom.addItem(currentItem);
+        }
+      }
     }
 
     /**
-     * Get the current total weight of the player's inventory.
+     * Remove an item (after eating or using).
+     * @param currentItem
+     */
+    public void removeItem(Item currentItem)
+    {
+      inventory.remove(currentItem);
+    }
+
+    /**
+     * Get the current weight of the player's inventory.
+     * @return int  current weight of player's inventory
      */
     private int getCurrentWeight()
     {
@@ -111,8 +169,9 @@ public class Player
     {
       String stringInventory = "";
       for (Item item : inventory) {
-          stringInventory += item.getName() + Game.TEXT_RED + "(" + item.getWeight() + ") " + Game.TEXT_RESET;
+          stringInventory += item.getName() + "(" + item.getWeight() + ") ";
       }
       return stringInventory;
     }
+
 }

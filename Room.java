@@ -20,7 +20,9 @@ public class Room
 {
     private String description;
     private HashMap<String, Room> exits;  // stores exits of this room.
-    private ArrayList<Item> items;        // stores items in this room
+    private ArrayList<Item> items;      // stores items in this room
+    private ArrayList<Player> ghost;   //stores ghost in room
+    private boolean open;  
 
     /**
      * Create a room described "description". Initially, it has
@@ -28,11 +30,13 @@ public class Room
      * "an open court yard".
      * @param description The room's description.
      */
-    public Room(String description) 
+    public Room(String description, boolean isOpen) 
     {
         this.description = description;
         exits = new HashMap<>();
         items = new ArrayList<Item>();
+        ghost = new ArrayList<Player>();
+        open = isOpen;
     }
 
     /**
@@ -64,20 +68,66 @@ public class Room
     }
 
     /**
-	 * Return an item given the item's name, otherwise it
+     * See if the room is open/unlocked
+     * @return boolean
+     */
+    public boolean isOpen() {
+        return open;
+    }
+
+    /**
+     * Unlock the room.
+     */
+    public void unlock() {
+        open = true;
+    }
+
+    /**
+     * Add ghost to room.
+     * @param ghost a Player object representing a ghost
+     */
+    public void addGhost(Player ghostPlayer)
+    {
+        ghost.add(ghostPlayer);
+    }
+
+    /**
+     * Check room for ghosts.
+     * @return boolean 
+     */
+    public boolean checkForGhost()
+    {
+        if (ghost.size() > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Return ghost object that is in the room
+     * @return Player  ghost object
+     */
+    public Player getGhost()
+    {
+        return ghost.get(0);
+    }
+
+    /**
+     * Return an item object given the item's name, if it
+     * exists in the room. Otherwise it
      * returns null.
-	 * @param itemName  name of the item
-	 * @return Item  the corresponding item object in the room
-	 */
-	public Item getItemFromName(String itemName)
-	{
+     * @param itemName  name of the item
+     * @return Item  the corresponding item object in the room
+     */
+    public Item getItemFromName(String itemName)
+    {
         for (Item item : items) {
             if (itemName.equals(item.getName())) {
                 return item;
             }
         }
         return null;
-	}
+    }
 
     /**
      * @return The short description of the room
@@ -92,12 +142,13 @@ public class Room
      * Return a description of the room in the form:
      *     You are in the kitchen.
      *     items in the room...
+     *     ghosts in the room...
      *     Exits: north west
      * @return A long description of this room
      */
     public String getLongDescription()
     {   
-        String longDescription = Game.TEXT_CYAN + "\nYou are " + description + "\n" + Game.TEXT_RESET;
+        String longDescription = "\nYou are " + description + "\n";
 
         if (items.size() > 0) {
             if (items.size() > 1) {
@@ -110,8 +161,14 @@ public class Room
             }
             longDescription += "\n";
         }
+        if (checkForGhost()) {
+            System.out.println("\nBOO!!!\n");
+            System.out.println("You are spooked by a ghost and lost 3 spoops of health.");
+            System.out.println("You can trade jewelry for any item the ghost has, and it will leave. \nOtherwise, it could scare you again.");
+            System.out.println("The ghost has these items for trading: " + getGhost().getPlayerInventory());
+        }
 
-        return longDescription + Game.TEXT_YELLOW + "\n" + getExitString() + Game.TEXT_RESET;
+        return longDescription + "\n" + getExitString();
     
     }
 
