@@ -60,7 +60,7 @@ public class Player
     }
 
     /**
-     * Check if item is tradeable
+     * Check if item is tradeable, if so, add it to inventory and return true.
      * @param item  item that player wants to trade
      * @return boolean  if item is tradeable
      */

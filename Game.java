@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 /**
  *  This class is the main class of the "Spooky Mansion" application. 
  *  "Spooky Mansion" is a text based adventure game.  Users 
@@ -8,10 +9,12 @@ import java.util.ArrayList;
  *  To play this game, create an instance of this class and call the "play"
  *  method. Outside of BlueJ, enter 'Java Game' into the command line.
  * 
- *  This main class creates and initializes all the others: it creates all
- *  rooms, creates the parser and starts the game.  It also evaluates and
- *  executes the commands that the parser returns.It also keeps an updated list of
- *  ghosts in the mansion at any time.
+ *  This main class creates and initializes all the others: it creates the rooms of
+ *  the mansion, places the ghosts and items into various rooms, initializes the
+ *  main player with 10 spoops of health, and creates the parser. It executes the
+ *  the commands the user makes, and it keeps track of the ghosts left in the
+ *  mansion at any given time.
+ *  
  * 
  * @author  Emma Grey
  * @version 2021.10.21
@@ -373,15 +376,20 @@ public class Game
 
         String itemString = command.getSecondWord();
         Item currentItem = player.getItemFromInventory(itemString);
+        
         if (currentItem == null) {
+            // You can't trade an item that we don't have in our inventory
             System.out.println("\nYou don't have this item to trade.");
             return;
         }
+        
         Player currentGhost = player.getRoom().getGhost();
         String ghostItemString = currentGhost.getPlayerInventory();
 
         if (itemString.equals("necklace") || itemString.equals("ring")) {
+            // must trade a jewelry item
             if (currentGhost.tradeItem(currentItem)) {
+                // if ghost can carry the item
                 if (ghostItemString.contains("candy")) {
                     Item ghostItem = currentGhost.getItemFromInventory("candy");
                     if (!player.tradeItem(ghostItem)) {
@@ -398,7 +406,9 @@ public class Game
                 }
                 player.removeItem(currentItem);
                 System.out.println("\nYou have traded with the ghost. It won't spook you anymore.");
+                // remove ghost from room
                 player.getRoom().removeGhost(currentGhost);
+                // remove ghost from game
                 ghosts.remove(currentGhost);
             } else {
                 System.out.println("\nThat won't fit into the ghost's inventory.");
@@ -467,14 +477,23 @@ public class Game
             return;
         }
         if (!nextRoom.isOpen()) {
-            System.out.println("\nThis door is locked. Use a key to unlock it.");
-        }
-        else {
-            player.setRoom(nextRoom);
-            System.out.println(player.getRoom().getLongDescription());
-            if (nextRoom.checkForGhost()) {
-                player.damage(3);
+            System.out.println("\nThis door is locked...");
+            if (player.getItemFromInventory("key") != null) {
+                Item key = player.getItemFromInventory("key");
+                System.out.println("but you have a key!");
+                player.getRoom().unlock();
+                player.setRoom(nextRoom);
+                player.removeItem(key);
+                System.out.println("\nYou slowly enter the room.");
+            } else {
+                System.out.println("...and you don't have a key to unlock it."); 
+                return;
             }
+        }
+        player.setRoom(nextRoom);
+        System.out.println(player.getRoom().getLongDescription());
+        if (nextRoom.checkForGhost()) {
+            player.damage(3);
         }
     }
 
@@ -536,28 +555,19 @@ public class Game
             System.out.println("\nYou don't have that item.");
             return;
         }
-        if (itemName.equals("key")) {
-            System.out.println("\nWhich door? (use go command)");
-            Command secondCommand = parser.getCommand();
-            String direction = secondCommand.getSecondWord();
-            Room nextRoom = player.getRoom().getExit(direction);
-            nextRoom.unlock();
-            System.out.println("\nYou unlocked the door. You wonder what could be on the other side.");
-            player.removeItem(currentItem);
-            return;
-        } else if (itemName.equals("jacket")) {
+        if (itemName.equals("jacket")) {
             player.addHealth(3);
             System.out.println("\nYou put on the oversized jacket. It increases your health by 3 spoops.");
             player.removeItem(currentItem);
             return;
-        } else if (itemName.equals("scarf")) {
+        } 
+        if (itemName.equals("scarf")) {
             player.addHealth(2);
             System.out.println("\nYou wrap the scarf around you. It warms you up a bit and increases your health by 3 spoops.");
             player.removeItem(currentItem);
             return;
         } 
         System.out.println("\nYou can't use this item.");
-        
     }
 
     /**
