@@ -24,7 +24,8 @@ public class Game
 {
     private Parser parser;
     private Player player;
-    private static ArrayList<Player> ghosts;
+    private ArrayList<Player> ghosts;
+    private static ArrayList<Room> rooms;
     /**
      * Create the game, initialize its internal map, and create a
      * player.
@@ -33,6 +34,7 @@ public class Game
     {
         player = new Player(10);
         ghosts = new ArrayList<Player>();
+        rooms = new ArrayList<Room>();
         createRooms();
         parser = new Parser();
     }
@@ -63,7 +65,7 @@ public class Game
         // create the rooms
         foyer = new Room("in the foyer of the Spooky Mansion.", true);
         mainHall = new Room("in the main hall. The chandelier above you is HUGE.", true);
-        diningRoom = new Room("in the dining room. The table is set...", true);
+        diningRoom = new TransporterRoom("in the dining room. The table is set...", true);
         kitchen = new Room("in the kitchen. It smells like something is rotting.", true);
         livingRoom = new Room("in the living room. Why is the TV on?", true);
         guestRoom = new Room("in the guest room. The closet door is eerily open.", false);
@@ -83,6 +85,7 @@ public class Game
         study = new Room("in the upstairs study. Dusty books are scattered everywhere.", true);
         bathroom = new Room("in the bathroom. The toilet water is black. Yuck.", true);
         kidBedroom = new Room("in a child's bedroom. Why does it feel like that doll is staring at you?", true);
+        
         
         //create items
             //to unlock doors
@@ -110,6 +113,7 @@ public class Game
         foyer.setExit("north", mainHall);
         foyer.addItem(chocolate);
         foyer.addItem(scarf);
+        rooms.add(foyer);
 
         mainHall.setExit("north", mainBottom);
         mainHall.setExit("south", foyer);
@@ -121,10 +125,12 @@ public class Game
         ghost1.addItem(chocolate);
         mainHall.addGhost(ghost1);
         ghosts.add(ghost1);
+        rooms.add(mainHall);
         
         library.setExit("west", lounge);
         library.setExit("east", mainHall);
         library.addItem(key);
+        rooms.add(library);
 
         lounge.setExit("north", garden);
         lounge.setExit("south", patio);
@@ -134,16 +140,20 @@ public class Game
         ghost2.addItem(candy);
         lounge.addGhost(ghost2);
         ghosts.add(ghost2);
+        rooms.add(lounge);
 
         garden.setExit("south", lounge);
         garden.addItem(necklace);
+        rooms.add(garden);
 
         patio.setExit("north", lounge);
         patio.addItem(key);
+        rooms.add(patio);
 
         mainBottom.setExit("south", mainHall);
         mainBottom.setExit("east", kitchen);
         mainBottom.setExit("up", mainTop);
+        rooms.add(mainBottom);
 
         diningRoom.setExit("north", kitchen);
         diningRoom.setExit("west", mainHall);
@@ -153,12 +163,14 @@ public class Game
         ghost3.addItem(chocolate);
         diningRoom.addGhost(ghost3);
         ghosts.add(ghost3);
+        rooms.add(diningRoom);
         
         kitchen.setExit("north", laundry);
         kitchen.setExit("south", diningRoom);
         kitchen.setExit("west", mainBottom);
         kitchen.setExit("east", livingRoom);
         kitchen.addItem(key);
+        rooms.add(kitchen);
         
 
         laundry.setExit("south", kitchen);
@@ -168,24 +180,29 @@ public class Game
         ghost4.addItem(candy);
         laundry.addGhost(ghost4);
         ghosts.add(ghost4);
+        rooms.add(laundry);
 
         livingRoom.setExit("north", guestRoom);
         livingRoom.setExit("west", kitchen);
         livingRoom.addItem(scarf);
         livingRoom.addItem(necklace);
+        rooms.add(livingRoom);
 
         guestRoom.setExit("south", livingRoom);
         guestRoom.setExit("west", laundry);
         guestRoom.setExit("east", basementTop);
         guestRoom.addItem(jacket);
         guestRoom.addItem(ring);
+        rooms.add(guestRoom);
 
         basementTop.setExit("west", guestRoom);
         basementTop.setExit("down", basementBottom);
+        rooms.add(basementTop);
 
         basementBottom.setExit("north", emptyRoom);
         basementBottom.setExit("west", cellar);
         basementBottom.setExit("up", basementTop);
+        rooms.add(basementBottom);
 
         cellar.setExit("east", basementBottom);
         cellar.addItem(flashlight);
@@ -195,16 +212,20 @@ public class Game
         ghost5.addItem(chocolate);
         cellar.addGhost(ghost5);
         ghosts.add(ghost5);
+        rooms.add(cellar);
 
         emptyRoom.setExit("south", basementBottom);
+        rooms.add(emptyRoom);
 
         mainTop.setExit("north", landing);
         mainTop.setExit("down", mainBottom);
+        rooms.add(mainTop);
 
         landing.setExit("north", bathroom);
         landing.setExit("south", mainTop);
         landing.setExit("west", kidBedroom);
         landing.setExit("east", masterBedroom);
+        rooms.add(landing);
 
         kidBedroom.setExit("east", landing);
         kidBedroom.addItem(doll);
@@ -214,10 +235,12 @@ public class Game
         ghost6.addItem(candy);
         kidBedroom.addGhost(ghost6);
         ghosts.add(ghost6);
+        rooms.add(kidBedroom);
 
         bathroom.setExit("south", landing);
         bathroom.setExit("east", study);
         bathroom.addItem(necklace);
+        rooms.add(bathroom);
         
         study.setExit("south", masterBedroom);
         study.setExit("west", bathroom);
@@ -227,15 +250,27 @@ public class Game
         ghost7.addItem(chocolate);
         study.addGhost(ghost7);
         ghosts.add(ghost7);
+        rooms.add(study);
 
         masterBedroom.setExit("north", study);
         masterBedroom.setExit("west", landing);
         masterBedroom.addItem(scarf);
         masterBedroom.addItem(ring);
+        rooms.add(masterBedroom);
 
         player.setRoom(foyer);
     }
-
+    
+    /**
+     * get the ArrayList of rooms in the mansion
+     * 
+     * @return an arraylist of rooms
+     */
+    public static ArrayList<Room> getRooms()
+    {
+        return rooms;
+    }
+    
     /**
      *  Main play routine.  Loops until end of play.
      */
@@ -332,19 +367,30 @@ public class Game
             case TRADE:
                 trade(command);
                 break;
+            
+            case GHOSTS:
+                printRemainingGhosts();
+                break;
         }
         return wantToQuit;
     }
     
     /**
+     * print statement of how many ghosts are left in the mansion
+     * 
+     */
+    private void printRemainingGhosts()
+    {
+        System.out.println("\nThere are " + getNumOfGhosts() + " ghosts left in the mansion.");
+    }
+    /**
      * Get how many ghosts are still in the mansion.
      * @return int  # of ghosts left
      */
-    public static int getNumOfGhosts()
+    private int getNumOfGhosts()
     {
         return ghosts.size();
     }
-    // implementations of user commands:
 
     /**
      * Print out some help information.
@@ -468,6 +514,11 @@ public class Game
         }
 
         String direction = command.getSecondWord();
+        
+        //Check if current room is a TransporterRoom
+        if (player.getRoom() instanceof TransporterRoom) {
+            System.out.println("\nUh oh...you've been transported to a random room!");
+        }
 
         // Try to leave current room.
         Room nextRoom = player.getRoom().getExit(direction);
@@ -539,7 +590,7 @@ public class Game
     }
 
     /**
-     * Use an item: unlock door with key.
+     * Use an item
      * @param 
      */
     private void use(Command command)
@@ -612,7 +663,7 @@ public class Game
      * the player successfully removed all the ghosts.
      * Otherwise, the game isn't over.
      */
-    public boolean isGameOver()
+    private boolean isGameOver()
     {
         if (player.getHealth() <= 0) {
             System.out.println("\nYou have been spooked to death... RIP");

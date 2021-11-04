@@ -25,7 +25,8 @@ public class Room
     private HashMap<String, Room> exits;  // stores exits of this room.
     private ArrayList<Item> items;      // stores items in this room
     private ArrayList<Player> ghost;   //stores ghost in room
-    private boolean open;  
+    private boolean open;
+    private RoomRandomizer randomizer;
 
     /**
      * Create a room by providing a description and
@@ -181,7 +182,6 @@ public class Room
             System.out.println("You can trade jewelry for any item the ghost has, and it will leave. \nOtherwise, it will scare you again.");
             System.out.println("The ghost has this item to trade: " + getGhost().getPlayerInventory());
         }
-        System.out.println("\nThere are " + Game.getNumOfGhosts() + " ghosts left in the mansion.");
 
         return longDescription + "\n" + getExitString();
     
