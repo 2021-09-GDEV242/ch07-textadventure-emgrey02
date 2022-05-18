@@ -1,6 +1,7 @@
 
 /**
- * This TransporterRoom class is a subclass of the Room class. 
+ * This TransporterRoom class is a subclass of the Room class. It creates a
+ * room that, when exited, transports the player to a random room in the mansion.
  *
  * @author Emma Grey
  * @version 11.4.2021
