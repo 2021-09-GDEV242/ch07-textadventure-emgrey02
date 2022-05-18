@@ -1,0 +1,23 @@
+For B level:
+- add items to game
+- make it so rooms can hold multiple items
+- add Player that can carry one or more items
+
+For A level:
+- locked doors and keys
+- eat changes game state
+- non-player characters with items for trade
+- rudimentary health system
+
+I failed to include discrete commits...
+but features in my project:
+- implement an item
+- allow player to take item
+- allow player to drop item
+- implement collection of items as inventory so player may have multiple items
+- add inventory to room so room can hold multiple items
+- add weight to items so player can only carry specified weight
+- player can trade with ghost
+- by trading, player removes ghost from house
+- if all ghosts are removed, player wins
+- if player loses all of their health, player loses.

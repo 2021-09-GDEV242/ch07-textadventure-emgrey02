@@ -1,6 +1,6 @@
 /**
- * This class is part of the "World of Zuul" application. 
- * "World of Zuul" is a very simple, text based adventure game.  
+ * This class is part of the The Spooky Mansion application. 
+ * The Spooky Mansion is a simple text based adventure game.  
  *
  * This class holds information about a command that was issued by the user.
  * A command currently consists of two parts: a CommandWord and a string
@@ -13,8 +13,8 @@
  *
  * If the command had only one word, then the second word is <null>.
  * 
- * @author  Michael Kölling and David J. Barnes
- * @version 2016.02.29
+ * @author  Emma Grey
+ * @version 2021.10.22
  */
 
 public class Command
@@ -26,7 +26,7 @@ public class Command
      * Create a command object. First and second words must be supplied, but
      * the second may be null.
      * @param commandWord The CommandWord. UNKNOWN if the command word
-     *                  was not recognised.
+     *                  was not recognized.
      * @param secondWord The second word of the command. May be null.
      */
     public Command(CommandWord commandWord, String secondWord)

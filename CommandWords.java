@@ -1,14 +1,14 @@
 import java.util.HashMap;
 
 /**
- * This class is part of the "World of Zuul" application. 
- * "World of Zuul" is a very simple, text based adventure game.
+ * This class is part of The Spooky Mansion application. 
+ * The Spooky Mansion  is a very simple, text based adventure game.
  * 
  * This class holds an enumeration of all command words known to the game.
- * It is used to recognise commands as they are typed in.
+ * It is used to recognize commands as they are typed in.
  *
- * @author  Michael Kölling and David J. Barnes
- * @version 2016.02.29
+ * @author  Emma Grey
+ * @version 2021.10.22
  */
 
 public class CommandWords
@@ -18,7 +18,7 @@ public class CommandWords
     private HashMap<String, CommandWord> validCommands;
 
     /**
-     * Constructor - initialise the command words.
+     * Constructor - initialize the command words.
      */
     public CommandWords()
     {
@@ -59,11 +59,12 @@ public class CommandWords
     /**
      * Print all valid commands to System.out.
      */
-    public void showAll() 
+    public String getCommandList() 
     {
+        String commandList = "";
         for(String command : validCommands.keySet()) {
-            System.out.print(command + "  ");
+            commandList += command + " ";
         }
-        System.out.println();
+        return commandList;
     }
 }
